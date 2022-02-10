@@ -1,6 +1,9 @@
 import App from "./app";
 import PostController from "./post/post.controller";
+import dotenv from "dotenv";
 
-const app = new App([new PostController()], 7000);
+dotenv.config();
+
+const app = new App([new PostController()], Number(process.env.PORT));
 
 app.listen();
