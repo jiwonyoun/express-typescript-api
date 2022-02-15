@@ -29,6 +29,7 @@ class App {
     return this.app;
   }
 
+  // 마운트 경로가 없이 설정된 미들에어 (모든 경로 요청마다 실행)
   private initMiddlewares() {
     this.app.use(bodyParser.json());
     this.app.use(urlencoded({ extended: false }));
