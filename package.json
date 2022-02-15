@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
@@ -21,6 +22,7 @@
     "mongoose": "^6.2.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.16",
     "nodemon": "^2.0.15",
