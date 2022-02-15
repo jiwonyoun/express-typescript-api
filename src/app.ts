@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import express, { Application, urlencoded } from "express";
 import Controller from "./interfaces/controller.interface";
 import loggerMiddleware from "./middleware/logger.middleware";
+import errorMiddleware from "./middleware/error.middleware";
+import validationMiddleware from "./middleware/validation.middleware";
 
 class App {
   public app: Application;
@@ -34,6 +36,7 @@ class App {
     this.app.use(bodyParser.json());
     this.app.use(urlencoded({ extended: false }));
     this.app.use(loggerMiddleware);
+    this.app.use(errorMiddleware);
   }
 
   private initControllers(controllers: Controller[]) {

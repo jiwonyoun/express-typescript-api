@@ -1,4 +1,7 @@
 import { NextFunction, Request, response, Response, Router } from "express";
+import HttpException from "../exceptions/http-exception";
+import validationMiddleware from "../middleware/validation.middleware";
+import CreatePostDto from "./post.dto";
 import Post from "./post.interface";
 import postModel from "./post.model";
 
@@ -22,8 +25,16 @@ class PostController {
   public initRoutes() {
     this.router.get(this.path, this.getAllPosts);
     this.router.get(`${this.path}/:id`, this.getPostById);
-    this.router.post(this.path, this.createPost);
-    this.router.patch(`${this.path}/:id`, this.updatePost);
+    this.router.post(
+      this.path,
+      validationMiddleware(CreatePostDto),
+      this.createPost
+    );
+    this.router.patch(
+      `${this.path}/:id`,
+      validationMiddleware(CreatePostDto, true),
+      this.updatePost
+    );
     this.router.delete(`${this.path}/:id`, this.deletePost);
   }
 
@@ -34,13 +45,12 @@ class PostController {
 
   async getPostById(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
-    const post = await this.posts.findById(id);
-
-    if (!post) {
-      throw new Error("Post Not Found.");
+    try {
+      const post = await this.posts.findById(id);
+      return res.send(post);
+    } catch (e) {
+      next(new HttpException(404, "Post not found"));
     }
-
-    return res.send(post);
   }
 
   async createPost(req: Request, res: Response) {
@@ -51,26 +61,26 @@ class PostController {
     return res.send(savedPost);
   }
 
-  async updatePost(req: Request, res: Response) {
+  async updatePost(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
     const postData: Post = req.body;
     try {
-      await this.posts.findByIdAndUpdate(id, postData);
-      return res.status(200);
+      const post = await this.posts.findByIdAndUpdate(id, postData);
+      return res.send(post);
     } catch (e) {
       console.log(e);
-      return res.status(404);
+      next(new HttpException(404, "Post not found"));
     }
   }
 
-  async deletePost(req: Request, res: Response) {
+  async deletePost(req: Request, res: Response, next: NextFunction) {
     const id = req.params.id;
     try {
       await this.posts.findByIdAndDelete(id);
-      return res.status(200);
+      return res.send(200);
     } catch (e) {
       console.log(e);
-      return res.status(404);
+      next(new HttpException(404, "Post not found"));
     }
   }
 }
