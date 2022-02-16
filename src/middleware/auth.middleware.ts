@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
 import "dotenv/config";
 import * as jwt from "jsonwebtoken";
-import * as express from "express";
 import { DataStoredInToken } from "../interfaces/jwt.interface";
 import userModel from "../user/user.model";
 import HttpException from "../exceptions/http-exception";

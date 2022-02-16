@@ -20,17 +20,20 @@ class PostController implements Controller {
   public initRoutes() {
     this.router.get(this.path, this.getAllPosts);
     this.router.get(`${this.path}/:id`, this.getPostById);
-    this.router.post(
-      this.path,
-      validationMiddleware(CreatePostDto),
-      this.createPost
-    );
-    this.router.patch(
-      `${this.path}/:id`,
-      validationMiddleware(CreatePostDto, true),
-      this.updatePost
-    );
-    this.router.delete(`${this.path}/:id`, this.deletePost);
+    this.router
+      .all(`${this.path}/*`, authMiddleware)
+      .post(
+        this.path,
+        authMiddleware,
+        validationMiddleware(CreatePostDto),
+        this.createPost
+      )
+      .patch(
+        `${this.path}/:id`,
+        validationMiddleware(CreatePostDto, true),
+        this.updatePost
+      )
+      .delete(`${this.path}/:id`, this.deletePost);
   }
 
   async getAllPosts(req: Request, res: Response) {
@@ -50,12 +53,12 @@ class PostController implements Controller {
     }
   }
 
-  async createPost(req: Request, res: Response) {
-    const postData: Post = req.body;
-    const createdPost = new this.posts(postData);
+  async createPost(req: RequestWithUser, res: Response) {
+    const postData: CreatePostDto = req.body;
+    const createdPost = new this.posts({ ...postData, authorId: req.user?.id });
 
     const savedPost = await createdPost.save();
-    await savedPost.populate("author");
+    await savedPost.populate("author", "-password");
 
     return res.send(savedPost);
   }
