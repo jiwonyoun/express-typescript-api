@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import HttpException from "../exceptions/http-exception";
+import Controller from "../interfaces/controller.interface";
 import { RequestWithUser } from "../interfaces/request-with-user.interface";
 import authMiddleware from "../middleware/auth.middleware";
 import validationMiddleware from "../middleware/validation.middleware";
@@ -7,7 +8,7 @@ import CreatePostDto from "./post.dto";
 import Post from "./post.interface";
 import postModel from "./post.model";
 
-class PostController {
+class PostController implements Controller {
   public path = "/posts";
   public router = Router();
   private posts = postModel;
@@ -33,7 +34,9 @@ class PostController {
   }
 
   async getAllPosts(req: Request, res: Response) {
-    const posts: Post[] = await this.posts.find().exec();
+    const posts: Post[] = await this.posts
+      .find()
+      .populate("author", "-password");
     return res.send(posts);
   }
 
@@ -50,7 +53,9 @@ class PostController {
   async createPost(req: Request, res: Response) {
     const postData: Post = req.body;
     const createdPost = new this.posts(postData);
+
     const savedPost = await createdPost.save();
+    await savedPost.populate("author");
 
     return res.send(savedPost);
   }

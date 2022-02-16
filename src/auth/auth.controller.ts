@@ -18,6 +18,10 @@ class AuthController implements Controller {
   public router = Router();
   private users = userModel;
 
+  constructor() {
+    this.initRoutes();
+  }
+
   private initRoutes() {
     this.router.post(
       `${this.path}/register`,
