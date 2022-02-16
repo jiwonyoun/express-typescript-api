@@ -1,5 +1,7 @@
-import { NextFunction, Request, response, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import HttpException from "../exceptions/http-exception";
+import { RequestWithUser } from "../interfaces/request-with-user.interface";
+import authMiddleware from "../middleware/auth.middleware";
 import validationMiddleware from "../middleware/validation.middleware";
 import CreatePostDto from "./post.dto";
 import Post from "./post.interface";
@@ -9,14 +11,6 @@ class PostController {
   public path = "/posts";
   public router = Router();
   private posts = postModel;
-
-  //   private posts: Post[] = [
-  //     {
-  //       author: "Marcin",
-  //       content: "Dolor sit amet",
-  //       title: "Lorem Ipsum",
-  //     },
-  //   ];
 
   constructor() {
     this.initRoutes();
